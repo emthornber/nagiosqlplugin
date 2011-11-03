@@ -1,17 +1,17 @@
 <?php
-/* 
+/*
  * @version $Id$
  ----------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2011 by the EdenProject Development Team.
- 
+
  ----------------------------------------------------------------------
 
  LICENSE
 
- This file is part of GLPI.
+ This file is part of the nagiosql plugin for GLPI.
 
- GLPI is free software; you can redistribute it and/or modify
+ Nagiosql plugin for GLPI is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
@@ -27,11 +27,11 @@
  ------------------------------------------------------------------------
  */
 
-// ------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------
 // Original Author : E M Thornber
 // Purpose of File :
-// ------------------------------------------------------------------------  
- 
+// ------------------------------------------------------------------------
+
 
 
 ?>
