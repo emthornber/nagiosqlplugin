@@ -32,6 +32,8 @@
 // Purpose of File :
 // ------------------------------------------------------------------------
 
+define ("PLUGIN_NAGIOSQL_VERSION","1.0.0");
+
 // Init the hooks of the plugins -Needed
 function plugin_init_nagiosql() {
 	global $PLUGIN_HOOKS,$LANG,$CFG_GLPI;
@@ -146,11 +148,12 @@ function plugin_init_nagiosql() {
 // Get the name and the version of the plugin - Needed
 function plugin_version_nagiosql() {
 
-	return array('name'           => 'Plugin nagiosql',
-                'version'        => '1.0.0',
-                'author'         => 'E M Thornber',
-                'homepage'       => 'https://github.com/emthornber/nagiosql',
-                'minGlpiVersion' => '0.80');
+	return array('name'           => 'Plugin Nagiosql',
+				 'shortname'      => 'nagiosql',
+                 'version'        => PLUGIN_NAGIOSQL_VERSION,
+                 'author'         => '<a href="mailto:emthornber@theiet.org">E M Thornber</a>',
+                 'homepage'       => 'https://github.com/emthornber/nagiosql',
+                 'minGlpiVersion' => '0.80');
 }
 
 

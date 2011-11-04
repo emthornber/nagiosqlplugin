@@ -36,27 +36,19 @@ if (!defined('GLPI_ROOT')) {
    define('GLPI_ROOT', '../../..');
 }
 
-require_once GLPI_ROOT."/inc/includes.php";
+include (GLPI_ROOT."/inc/includes.php");
 
-checkLoginUser();
+commonHeader($LANG['plugin_nagiosql']['title'][0], $_SERVER["PHP_SELF"], "plugins",
+             "nagiosql", "display");
 
-popHeader($LANG['plugin_nagiosql']['title'][0], $_SERVER["PHP_SELF"]);
-
-echo '<meta http-equiv ="refresh" content="30">';
-
-$_SESSION['plugin_nagiosql']['service'] = $_GET;
 
 $pNagiosqlDisplay = new PluginNagiosqlDisplay();
-$pNagiosqlDisplay->displayCounters();
-$pNagiosqlDisplay->showTabs();
-echo "<style type='text/css'>
-div#tabcontent {
-   width:99%;
+
+if (isset($_GET['itemtype']) AND isset($_GET['items_id'])) {
+   $pNagiosqlDisplay->displayGraphs($_GET['itemtype'], $_GET['items_id']);
 }
 
-</style>";
-$pNagiosqlDisplay->addDivForTabs();
+commonFooter();
 
-popFooter();
 
 ?>
