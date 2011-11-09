@@ -34,6 +34,10 @@
 
 $title="NagiosQL";
 
+// English
+
 $LANG['plugin_nagiosql']['title'][0]="$title";
+
+$LANG['plugin_nagiosql']['setup'][1] = 'This plugin requires GLPI version 0.80 or higher';
 
 ?>

@@ -163,7 +163,8 @@ function plugin_nagiosql_check_prerequisites() {
 	if (GLPI_VERSION >= 0.80) {
 		return true;
 	} else {
-		echo "GLPI version not compatible need at least 0.80";
+		// This plugin requires GLPI version 0.80 or higher
+		echo $LANG['plugin_relations']['setup'][1];
 	}
 }
 
