@@ -28,8 +28,8 @@
  */
 
 // ------------------------------------------------------------------------
-// Original Author : E M Thornber
-// Purpose of File :
+// Original Author : E M Thornber after Ryan Foster (relations plugin)
+// Purpose of File : Used to initialize the plugin and define its actions.
 // ------------------------------------------------------------------------
 
 define ("PLUGIN_NAGIOSQL_VERSION","1.0.0");
@@ -39,109 +39,33 @@ function plugin_init_nagiosql() {
 	global $PLUGIN_HOOKS,$LANG,$CFG_GLPI;
 
 	// Params : plugin name - string type - ID - Array of attributes
-	// No specific information passed so not needed
-	//Plugin::registerClass('PluginNagiosqlExample',
-	//                      array('classname'              => 'PluginNagiosqlExample',
-	//                        ));
+	Plugin::registerClass('PluginNagiosqlRelation');
 
-	// Params : plugin name - string type - ID - Array of attributes
-	Plugin::registerClass('PluginNagiosqlDropdown');
+	$PLUGIN_HOOKS['change_profile']['nagiosql'] = array('PluginNagiosqlProfile','select');
 
-	Plugin::registerClass('PluginNagiosqlExample',
-	array('notificationtemplates_types' => true));
-
-	// Display a menu entry ?
-	if (isset($_SESSION["glpi_plugin_nagiosql_profile"])) { // Right set in change_profile hook
-		$PLUGIN_HOOKS['menu_entry']['nagiosql'] = 'front/nagiosql.php';
-
-		$PLUGIN_HOOKS['submenu_entry']['nagiosql']['options']['optionname']['title'] = "Search";
-		$PLUGIN_HOOKS['submenu_entry']['nagiosql']['options']['optionname']['page'] = '/plugins/nagiosql/front/nagiosql.php';
-		$PLUGIN_HOOKS['submenu_entry']['nagiosql']['options']['optionname']['links']['search'] = '/plugins/nagiosql/front/nagiosql.php';
-		$PLUGIN_HOOKS['submenu_entry']['nagiosql']['options']['optionname']['links']['add'] = '/plugins/nagiosql/front/nagiosql.form.php';
-		$PLUGIN_HOOKS['submenu_entry']['nagiosql']['options']['optionname']['links']['config'] = '/plugins/nagiosql/index.php';
-		$PLUGIN_HOOKS['submenu_entry']['nagiosql']['options']['optionname']['links']["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".$LANG['plugin_nagiosql']["test"]."' alt='".$LANG['plugin_nagiosql']["test"]."'>"] = '/plugins/nagiosql/index.php';
-		$PLUGIN_HOOKS['submenu_entry']['nagiosql']['options']['optionname']['links'][$LANG['plugin_nagiosql']["test"]] = '/plugins/nagiosql/index.php';
-
-		$PLUGIN_HOOKS["helpdesk_menu_entry"]['nagiosql'] = true;
+	// plugin enabled
+	if ( class_exists('PluginNagiosqlRelation') ){
+		$PLUGIN_HOOKS['item_purge']['nagiosql'] = array();
+		foreach ( PluginNagiosqlRelation::getTypes(true) as $type ){
+			$PLUGIN_HOOKS['item_purge']['nagiosql'][$type] =
+						'plugin_item_purge_anything';
+		}
 	}
+	
+	if (isset($_SESSION["glpiID"])){
+		// Display a menu entry ? No, just tabs and massive actions
+		// depending on rights
+		if ( plugin_nagiosql_haveRight('nagiosql','r') ){
+			$PLUGIN_HOOKS['headings']['nagiosql']
+					= 'plugin_get_headings_nagiosql';
+			$PLUGIN_HOOKS['headings_action']['nagiosql']
+					 = 'plugin_headings_actions_nagiosql';
+		}
 
-	// Config page
-	if (haveRight('config','w')) {
-		$PLUGIN_HOOKS['config_page']['nagiosql'] = 'config.php';
-	}
-
-	// Init session
-	//$PLUGIN_HOOKS['init_session']['nagiosql'] = 'plugin_init_session_nagiosql';
-	// Change profile
-	$PLUGIN_HOOKS['change_profile']['nagiosql'] = 'plugin_change_profile_nagiosql';
-	// Change entity
-	//$PLUGIN_HOOKS['change_entity']['nagiosql'] = 'plugin_change_entity_nagiosql';
-
-	// Onglets management
-	$PLUGIN_HOOKS['headings']['nagiosql']        = 'plugin_get_headings_nagiosql';
-	$PLUGIN_HOOKS['headings_action']['nagiosql'] = 'plugin_headings_actions_nagiosql';
-
-	// Item action event // See define.php for defined ITEM_TYPE
-	$PLUGIN_HOOKS['pre_item_update']['nagiosql'] = array('Computer'=>'plugin_pre_item_update_nagiosql');
-	$PLUGIN_HOOKS['item_update']['nagiosql']     = array('Computer'=>'plugin_item_update_nagiosql');
-
-	// Example using a method in class
-	$PLUGIN_HOOKS['pre_item_add']['nagiosql'] = array('Computer' => array('PluginNagiosqlExample',
-                                                                        'pre_item_add_nagiosql'));
-	$PLUGIN_HOOKS['item_add']['nagiosql']     = array('Computer' => array('PluginNagiosqlExample',
-                                                                        'item_add_nagiosql'));
-
-	$PLUGIN_HOOKS['pre_item_delete']['nagiosql'] = array('Computer'=>'plugin_pre_item_delete_nagiosql');
-	$PLUGIN_HOOKS['item_delete']['nagiosql']     = array('Computer'=>'plugin_item_delete_nagiosql');
-
-	// Example using the same function
-	$PLUGIN_HOOKS['pre_item_purge']['nagiosql'] = array('Computer'=>'plugin_pre_item_purge_nagiosql',
-                                                      'Phone'=>'plugin_pre_item_purge_nagiosql');
-	$PLUGIN_HOOKS['item_purge']['nagiosql']     = array('Computer'=>'plugin_item_purge_nagiosql',
-                                                      'Phone'=>'plugin_item_purge_nagiosql');
-
-	// Example with 2 different functions
-	$PLUGIN_HOOKS['pre_item_restore']['nagiosql'] = array('Computer'=>'plugin_pre_item_restore_nagiosql',
-                                                         'Phone'=>'plugin_pre_item_restore_nagiosql2');
-	$PLUGIN_HOOKS['item_restore']['nagiosql']     = array('Computer'=>'plugin_item_restore_nagiosql');
-
-	// Add event to GLPI core itemtype, event will be raised by the plugin.
-	// See plugin_example_uninstall for cleanup of notification
-	$PLUGIN_HOOKS['item_get_events']['nagiosql'] = array('NotificationTargetTicket'=>'plugin_nagiosql_get_events');
-
-	// Add datas to GLPI core itemtype for notifications template.
-	$PLUGIN_HOOKS['item_get_datas']['nagiosql'] = array('NotificationTargetTicket'=>'plugin_nagiosql_get_datas');
-
-	$PLUGIN_HOOKS['item_transfer']['nagiosql'] = 'plugin_item_transfer_nagiosql';
-
-	//redirect appel http://localhost/glpi/index.php?redirect=plugin_example_2 (ID 2 du form)
-	$PLUGIN_HOOKS['redirect_page']['nagiosql'] = 'nagiosql.form.php';
-
-	//function to populate planning
-	$PLUGIN_HOOKS['planning_populate']['nagiosql'] = 'plugin_planning_populate_nagiosql';
-
-	//function to display planning items
-	$PLUGIN_HOOKS['display_planning']['nagiosql'] = 'plugin_display_planning_nagiosql';
-
-	// Massive Action definition
-	$PLUGIN_HOOKS['use_massive_action']['nagiosql'] = 1;
-
-	$PLUGIN_HOOKS['assign_to_ticket']['nagiosql'] = 1;
-
-	// Add specific files to add to the header : javascript or css
-	$PLUGIN_HOOKS['add_javascript']['nagiosql'] = 'nagiosql.js';
-	$PLUGIN_HOOKS['add_css']['nagiosql']        = 'nagiosql.css';
-
-	// Retrieve others datas from LDAP
-	//$PLUGIN_HOOKS['retrieve_more_data_from_ldap']['example']="plugin_retrieve_more_data_from_ldap_example";
-
-	// Reports
-	$PLUGIN_HOOKS['reports']['nagiosql'] = array('report.php'       => 'New Report',
-                                               'report.php?other' => 'New Report 2');
-
-	// Stats
-	$PLUGIN_HOOKS['stats']['nagiosql'] = array('stat.php'       => 'New stat',
-                                             'stat.php?other' => 'New stats 2',);
+		if ( plugin_nagiosql_haveRight('nagiosql','w') ){
+			$PLUGIN_HOOKS['use_massive_action']['nagiosql'] = 1;
+		}
+	}	
 }
 
 
@@ -157,14 +81,15 @@ function plugin_version_nagiosql() {
 }
 
 
-// Optional : check prerequisites before install : may print errors or add to message after redirect
+// Check prerequisites before install : may print errors or add to message after redirect
 function plugin_nagiosql_check_prerequisites() {
-
+	global $LANG;
+	
 	if (GLPI_VERSION >= 0.80) {
 		return true;
 	} else {
 		// This plugin requires GLPI version 0.80 or higher
-		echo $LANG['plugin_relations']['setup'][1];
+		echo $LANG['plugin_nagiosql']['setup'][1];
 	}
 }
 
@@ -172,26 +97,18 @@ function plugin_nagiosql_check_prerequisites() {
 // Check configuration process for plugin : need to return true if succeeded
 // Can display a message only if failure and $verbose is true
 function plugin_nagiosql_check_config($verbose=false) {
-	global $LANG;
-
-	if (true) { // Your configuration check
-		return true;
-	}
-	if ($verbose) {
-		echo $LANG['plugins'][2];
-	}
-	return false;
+	return true;
 }
 
-function plugin_nagiosql_haveRight($module,$right){
+function plugin_nagiosql_haveRight($module,$right) {
 
 	$matches=array( ""  => array("","r","w"), // ne doit pas arriver normalement
-			"r" => array("r","w"),
-			"w" => array("w"),
-			"1" => array("1"),
-			"0" => array("0","1"), // ne doit pas arriver non plus
+					"r" => array("r","w"),
+					"w" => array("w"),
+					"1" => array("1"),
+					"0" => array("0","1"), // ne doit pas arriver non plus
 	);
-	if ( isset($_SESSION["glpi_plugin_nagiosql_profile"][$module])
+	if ( isset($_SESSION["glpi_plugin_nagiosql_profile"][$module] )
 	&& in_array($_SESSION["glpi_plugin_nagiosql_profile"][$module],$matches[$right]) ) {
 		return true;
 	} else {
