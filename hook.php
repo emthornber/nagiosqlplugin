@@ -39,35 +39,31 @@ function plugin_nagiosql_install() {
 }
 
 // Uninstall process for plugin : need to return true if succeeded
-function plugin_monitoring_uninstall() {
+function plugin_nagiosql_uninstall() {
 	include (GLPI_ROOT . "/plugins/nagiosql/install/install.php");
 	pluginNagiosqlUninstall();
 	return true;
 }
 
-
 // what to do when an item within a relationship is purged
 function plugin_item_purge_anything($item){
-
 	global $LANG;
 
 	$type = get_class($item);
-	if ( in_array($type, PluginRelationsRelation::getTypes(true)) ){
+	if ( in_array($type, PluginNagiosqlLink::getTypes(true)) ){
 
 		$id = $item->getField('id');
 		if ( isset($id) ){
-
 			global $DB;
 
-			$query = "DELETE FROM glpi_plugin_relations_relations
+			$query = "DELETE FROM glpi_plugin_nagiosql_links
 				WHERE itemtype = '$type'
 				AND ( parent_id = '$id' OR items_id = '$id');";
 			$result = $DB->query($query);
 			if ( $result == false ){
-				addMessageAfterRedirect($LANG['plugin_relations']['errors'][2],true);
-			}
-			elseif ( $DB->affected_rows() > 0 ){
-				addMessageAfterRedirect($LANG['plugin_relations']['errors'][3],true);
+				addMessageAfterRedirect($LANG['plugin_nagiosql']['errors'][2],true);
+			} elseif ( $DB->affected_rows() > 0 ){
+				addMessageAfterRedirect($LANG['plugin_nagiosql']['errors'][3],true);
 			}
 			return true;
 		}
@@ -75,66 +71,54 @@ function plugin_item_purge_anything($item){
 	return false;
 }
 
-// ???????????
 // Define rights for the plugin types
-function plugin_relations_haveTypeRight($type,$right){
+function plugin_nagiosql_haveTypeRight($type,$right){
 	switch ($type){
-		case PLUGIN_RELATIONS_TYPE :
+		case PLUGIN_NAGIOSQL_TYPE :
 			// 1 - All rights for all users
 			// return true;
 			// 2 - Similarity right : same right of computer
-			return plugin_relations_haveRight('relations',$right);
+			return plugin_nagiosql_haveRight('links',$right);
 			break;
 	}
 }
 
-// Useless hook
-//function plugin_item_purge_relations($parm){
-
-//	if (in_array($parm['type'],array(COMPUTER_TYPE,NETWORKING_TYPE))){
-//		$plugin_relations=new plugin_relations;
-//		$plugin_relations->cleanItems($parm['ID'],$parm['type']);
-//		return true;
-//	}else
-//		return false;
-//}
-
-// Define the the plugin heading that wil show up in a form tab
-function plugin_get_headings_relations($item,$withtemplate){
-
+// Define the the plugin heading that will show up in a form tab
+function plugin_get_headings_nagiosql($item,$withtemplate){
 	global $LANG;
 
 	$type = get_Class($item);
 
-	if ( in_array($type,PluginRelationsRelation::getTypes(true)) ){
-		// template case
+	if ( in_array($type,PluginNagiosqlLink::getTypes(true)) ){
 		$id = $item->getField('id');
-		if ( $withtemplate || $id < 0 || $id == '' )
-		return array();
-		// Non template case
-		else
-		return array(1 => $LANG['plugin_relations']['title'][1]);
+		if ( $withtemplate || $id < 0 || $id == '' ) {
+			// template case
+			return array();
+		} else {
+			// Non template case
+			return array(1 => $LANG['plugin_nagiosql']['title'][1]);
+		}
+	} else {
+		return false;
 	}
-	else
-	return false;
 }
+
 // Define headings actions added by the plugin
-// PT 20100913
-function plugin_headings_actions_relations($item){
+function plugin_headings_actions_nagiosql($item){
 
 	$type = get_Class($item);
 
-	if ($type == 'Profile') return array(1 => 'plugin_headings_relations');
+	if ($type == 'Profile') return array(1 => 'plugin_headings_nagiosql');
 
-	if ( in_array($type,PluginRelationsRelation::getTypes(true)) )
-
-	return array(1 => array('PluginRelationsRelation','showAssociated'));
-	else
-	return false;
+	if ( in_array($type,PluginNagiosqlLink::getTypes(true)) ) {
+		return array(1 => array('PluginNagiosqlLink','showAssociated'));
+	} else {
+		return false;
+	}
 }
 
 // relations of an action heading
-function plugin_headings_relations($item,$withtemplate=0){
+function plugin_headings_nagiosql($item,$withtemplate=0){
 	global $CFG_GLPI, $LANG;
 
 	$type = get_Class($item);
@@ -142,11 +126,11 @@ function plugin_headings_relations($item,$withtemplate=0){
 
 	switch ($type){
 		case 'Profile' :
-			$prof = new PluginRelationsProfile();
+			$prof = new PluginNagiosqlProfile();
 			if ( $prof->GetfromDB($ID) || $prof->createUserAccess($item) ){
 				$prof->showForm($ID,
-				array('target' => $CFG_GLPI["root_doc"]
-				."/plugins/relations/front/profile.form.php")
+					array('target' => $CFG_GLPI["root_doc"]
+					."/plugins/nagiosql/front/profile.form.php")
 				);
 			}
 			break;
@@ -156,21 +140,18 @@ function plugin_headings_relations($item,$withtemplate=0){
 ////// SEARCH FUNCTIONS ///////
 
 // Define search options
-function plugin_relations_getAddSearchOptions($itemtype){
-
+function plugin_nagiosql_getAddSearchOptions($itemtype){
 	global $LANG;
 
 	$sopt = array();
 
-	if ( plugin_relations_haveRight("relations","r") ){
-
+	if ( plugin_nagiosql_haveRight("links","r") ){
 		if ( in_array($itemtype, PluginRelationsRelation::getTypes(true)) ){
-
-			$sopt[2250]['table'] = 'glpi_plugin_relations_relations';
+			$sopt[PLUGIN_NAGIOSQL_MIN_TYPE]['table'] = 'glpi_plugin_nagiosql_links';
 			$sopt[2250]['field'] = '';
 			$sopt[2250]['linkfield'] = 'parent';
-			$sopt[2250]['name']= $LANG['plugin_relations']['title'][1]
-			. " - " . $LANG['plugin_relations']['params'][1];
+			$sopt[2250]['name']= $LANG['plugin_nagiosql']['title'][1]
+			. " - " . $LANG['plugin_nagiosql']['params'][1];
 			$sopt[2250]['datatype']	= 'itemlink';
 			$sopt[2250]['itemlink_type'] = $itemtype;
 
@@ -185,7 +166,7 @@ function plugin_relations_getAddSearchOptions($itemtype){
 			//$sopt[2251]["splititems"] = true;
 		}
 	}
-		
+
 	return $sopt;
 }
 

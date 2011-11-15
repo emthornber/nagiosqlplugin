@@ -38,6 +38,20 @@ $title="NagiosQL";
 
 $LANG['plugin_nagiosql']['title'][0]="$title";
 
+$LANG['plugin_relations']['params'][0]='Type';
+$LANG['plugin_relations']['params'][1]='Parent';
+$LANG['plugin_relations']['params'][2]='Children';
+$LANG['plugin_relations']['params'][3]='Name';
+$LANG['plugin_relations']['params'][4]='Siblings';
+$LANG['plugin_relations']['params'][5]='Remove';
+$LANG['plugin_relations']['params'][6]='Change Parent to...';
+
+$LANG['plugin_relations']['errors'][0]='Sorry. You cannot add a descendant as a parent!';
+$LANG['plugin_relations']['errors'][1]='Sorry. You cannot add an ancestor as a child!';
+$LANG['plugin_relations']['errors'][2]='Failed to purge associated relationships';
+$LANG['plugin_relations']['errors'][3]='Also purged associated relationships';
+$LANG['plugin_relations']['errors'][4]='Sorry. A parent cannot be its own child!';
+
 $LANG['plugin_nagiosql']['setup'][1] = 'This plugin requires GLPI version 0.80 or higher';
 
 ?>
