@@ -62,5 +62,17 @@ $LANG['plugin_nagiosql']['profile'][1] = $title;
 $LANG['plugin_nagiosql']['profile'][6] = 'List of profiles already configured';
 
 $LANG['plugin_nagiosql']['setup'][1] = 'This plugin requires GLPI version 0.80 or higher';
+$LANG['plugin_relations']['setup'][3] = 'Setup of '.$title.' plugin';
+$LANG['plugin_relations']['setup'][4] = 'Install '.$title.' plugin';
+$LANG['plugin_relations']['setup'][1] = 'Existing relations data was found on your system. This data has been restored.';
+$LANG['plugin_relations']['setup'][5] = 'Data from an older version of '.$title.' was found. This data will be upgraded when you activate this plugin.';
+$LANG['plugin_relations']['setup'][6] = 'Uninstall '.$title.' plugin';
+$LANG['plugin_relations']['setup'][8] = 'Warning, the uninstallation of the plugin is irreversible.<br> You will loose all the data.';
+$LANG['plugin_relations']['setup'][7] = 'Relations has been uninstalled, but your relations data has not been removed.';
+$LANG['plugin_relations']['setup'][9] = 'Click here to delete all relations data.';
+$LANG['plugin_relations']['setup'][10] = 'Are you sure you want to delete all relations data?';
+$LANG['plugin_relations']['setup'][11] = 'Instructions';
+$LANG['plugin_relations']['setup'][12] = 'FAQ';
+$LANG['plugin_relations']['setup'][14] = 'Please select "Root Entity (see all)"';
 
 ?>

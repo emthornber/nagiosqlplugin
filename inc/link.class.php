@@ -1,10 +1,10 @@
 <?php
-/* 
+/*
  * @version $Id$
  ----------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2011 by the EdenProject Development Team.
- 
+
  ----------------------------------------------------------------------
 
  LICENSE
@@ -27,14 +27,14 @@
  ------------------------------------------------------------------------
  */
 
-// ------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------
 // Original Author : E M Thornber (after Ryan Foster)
 // Purpose of File :
-// ------------------------------------------------------------------------  
- 
+// ------------------------------------------------------------------------
+
 if (!defined('GLPI_ROOT')){
 	die("Sorry. You can't access directly to this file");
-	}
+}
 
 // CLASSES links
 
@@ -59,13 +59,13 @@ class PluginNagiosqlLink extends CommonDBTM {
 	static function dropdown($options=array()){
 		global $DB,$LANG,$CFG_GLPI;
 
-		// Defautl values
+		// Default values
 		$p['entity'] = '';
 		$p['used'] = array();
 
 		if ( is_array($options) && count($options) ){
-         		foreach ($options as $key => $val) {
-            			$p[$key] = $val;
+			foreach ($options as $key => $val) {
+				$p[$key] = $val;
 			}
 		}
 
@@ -73,7 +73,7 @@ class PluginNagiosqlLink extends CommonDBTM {
 
 		switch($p['itemtype']){
 			case 'Computer' :
-                $query = 'SELECT `id`, `name`
+				$query = 'SELECT `id`, `name`
 					FROM glpi_computertypes ORDER BY `name`';
 				break;
 			case 'NetworkEquipment' :
@@ -107,8 +107,8 @@ class PluginNagiosqlLink extends CommonDBTM {
 				'used' => $p['used']);
 
 		ajaxUpdateItemOnSelectEvent($type_links,"show_".$p['name'].$rand,
-			$CFG_GLPI["root_doc"]
-			."/plugins/nagiosql/ajax/dropdownLinks.php",$params);
+		$CFG_GLPI["root_doc"]
+		."/plugins/nagiosql/ajax/dropdownLinks.php",$params);
 
 		echo "<span id='show_".$p['name']."$rand'>";
 		$_POST["entity_restrict"] = $p['entity'];
@@ -124,12 +124,12 @@ class PluginNagiosqlLink extends CommonDBTM {
 	}
 
 	/**
-	* Types that can have links
-	*
-	* @param $all boolean, all type, or only allowed ones
-	*
-	* @return array of types
-	*/
+	 * Types that can have links
+	 *
+	 * @param $all boolean, all type, or only allowed ones
+	 *
+	 * @return array of types
+	 */
 	static function getTypes($all=false){
 
 		static $types = array('Computer', 'NetworkEquipment', 'Supplier', 'Profile');
@@ -165,12 +165,12 @@ class PluginNagiosqlLink extends CommonDBTM {
 			case 'Supplier' :
 				$datatable='glpi_suppliers';
 				break;
-        
+
 		}
 		$name = "";
 		$query = "SELECT `name` FROM `$datatable` WHERE `id` =" . $id;
 		$result = mysql_query($query);
-       
+		 
 		if ( $result ){
 			$row = mysql_fetch_row($result);
 			$name = $row[0];
@@ -187,7 +187,7 @@ class PluginNagiosqlLink extends CommonDBTM {
 			$query = "INSERT INTO glpi_plugin_nagiosql_links
 				(parent_id,items_id,itemtype)
 				VALUES ('$parentID','$ID','$type');";
-               
+			 
 			$result = $DB->query($query);
 
 		}
@@ -204,10 +204,10 @@ class PluginNagiosqlLink extends CommonDBTM {
 		while ( ( ! $found ) && ( $data = $DB->fetch_assoc($result) ) ){
 
 			if ( $data['thisDevice'] == $testDevice )
-				$found = true;
+			$found = true;
 			else
-				$found = PluginRelationsRelation::isDescendant($testDevice,
-						$data['thisDevice'],$device_type);
+			$found = PluginRelationsRelation::isDescendant($testDevice,
+			$data['thisDevice'],$device_type);
 		}
 		return $found;
 	}
@@ -221,21 +221,21 @@ class PluginNagiosqlLink extends CommonDBTM {
 
 		if ( $data = $DB->fetch_assoc($result) ){
 			if ( $data['thisDevice'] == $testDevice )
-				return true;
+			return true;
 			else
-				return PluginRelationsRelation::isAncestor($testDevice,
-						$data['thisDevice'],$device_type);
+			return PluginRelationsRelation::isAncestor($testDevice,
+			$data['thisDevice'],$device_type);
 		}
 		else
-			return false;
+		return false;
 	}
 
 	/**
-	* Log event into the history
-	* @param device_type the type of the item to inject
-	* @param device_id the id of the inserted item
-	* @param the action_type the type of action(add or update)
-	*/
+	 * Log event into the history
+	 * @param device_type the type of the item to inject
+	 * @param device_id the id of the inserted item
+	 * @param the action_type the type of action(add or update)
+	 */
 	static function logChange($device_type, $device_id, $parent_id, $child, $parent, $action_type){
 
 		global $LANG;
@@ -251,40 +251,40 @@ class PluginNagiosqlLink extends CommonDBTM {
 		if ( $action_type == RELATIONS_LINK ){
 
 			$parentchanges[2] = $LANG["plugin_nagiosql"]['log'][0]
-					. ' ' . $device_id
-					. ' ' . $child;
+			. ' ' . $device_id
+			. ' ' . $child;
 			$childchanges[2] = $LANG["plugin_nagiosql"]['log'][1]
-					. ' ' . $parent_id
-					. ' ' . $parent;
-        
+			. ' ' . $parent_id
+			. ' ' . $parent;
+
 		}
-        
+
 		else if ( $action_type == RELATIONS_UNLINK ){
 
 			$parentchanges[2] = $LANG["plugin_nagiosql"]['log'][2]
-					. ' ' . $device_id
-					. ' ' . $child;
+			. ' ' . $device_id
+			. ' ' . $child;
 			$childchanges[2] = $LANG["plugin_nagiosql"]['log'][3]
-					. ' ' . $parent_id
-					. ' ' . $parent;
-        
+			. ' ' . $parent_id
+			. ' ' . $parent;
+
 		}
 		Log::history($parent_id, $device_type, $parentchanges, 0,
-				HISTORY_LOG_SIMPLE_MESSAGE);
+		HISTORY_LOG_SIMPLE_MESSAGE);
 		Log::history($device_id, $device_type, $childchanges, 0,
-				HISTORY_LOG_SIMPLE_MESSAGE);
+		HISTORY_LOG_SIMPLE_MESSAGE);
 	}
 
 	/**
-	* Show links associated to a device
-	*
-	* Called from the device form (nagiosql tab)
-	*
-	* @param $itemtype : type of the device
-	* @param $ID of the device
-	* @param $withtemplate : not used, always empty
-	*
-	**/
+	 * Show links associated to a device
+	 *
+	 * Called from the device form (nagiosql tab)
+	 *
+	 * @param $itemtype : type of the device
+	 * @param $ID of the device
+	 * @param $withtemplate : not used, always empty
+	 *
+	 **/
 	static function showAssociated($item,$withtemplate=''){
 
 		global $DB,$CFG_GLPI,$LANG;
@@ -306,41 +306,41 @@ class PluginNagiosqlLink extends CommonDBTM {
 
 			case 'Computer' :
 				$form='computer';
-				$datatable='glpi_computers'; 
-				$typetable='glpi_computertypes'; 
+				$datatable='glpi_computers';
+				$typetable='glpi_computertypes';
 				$morefrom=', glpi_computertypes AS t';
 				break;
 
-			case 'NetworkEquipment' : 
+			case 'NetworkEquipment' :
 				$form='networkequipment';
-				$datatable='glpi_networkequipments'; 
-				$typetable='glpi_networkequipmenttypes'; 
+				$datatable='glpi_networkequipments';
+				$typetable='glpi_networkequipmenttypes';
 				$morefrom=', glpi_networkequipmenttypes AS t';
 				break;
-			case 'Supplier' : 
+			case 'Supplier' :
 				$form='supplier';
-				$datatable='glpi_suppliers'; 
-				$typetable='glpi_suppliertypes'; 
+				$datatable='glpi_suppliers';
+				$typetable='glpi_suppliertypes';
 				$morefrom=', glpi_suppliertypes AS t';
 				$showgroup=false;
 				break;
-			default: 
+			default:
 				echo 'Error - invalid type';
 				exit;
-			}
-			if( $showgroup ){
-				$moreselect=", g.name AS grp";
-				$morejoin=" LEFT JOIN glpi_groups AS g ON d.groups_id = g.id";
-			}
-			else {
-				$numcols--;
-				$moreselect="";
-				$morejoin="";
-			}
+		}
+		if( $showgroup ){
+			$moreselect=", g.name AS grp";
+			$morejoin=" LEFT JOIN glpi_groups AS g ON d.groups_id = g.id";
+		}
+		else {
+			$numcols--;
+			$moreselect="";
+			$morejoin="";
+		}
 
-			// PT 20100914
+		// PT 20100914
 		$query1 = "SELECT pc.*, d.name, e.id AS entID, e.name AS entity, t.name AS type"
-			. $moreselect .
+		. $moreselect .
 			" FROM glpi_plugin_nagiosql_links AS pc, $datatable AS d".
 			" LEFT JOIN glpi_entities AS e ON d.entities_id = e.id".
 			" LEFT JOIN $typetable AS t ON d." . $form . "types_id = t.id"
@@ -350,7 +350,7 @@ class PluginNagiosqlLink extends CommonDBTM {
 			" AND pc.itemtype = '$itemtype'".
 			" AND pc.parent_id = d.id";
 
-		$query3 = "SELECT pc.*, d.name, e.id AS entID, e.name AS entity, t.name AS type"
+			$query3 = "SELECT pc.*, d.name, e.id AS entID, e.name AS entity, t.name AS type"
 			.$moreselect.
 			" FROM glpi_plugin_nagiosql_links AS pc, $datatable AS d".
 			" LEFT JOIN glpi_entities AS e ON d.entities_id = e.id".
@@ -362,62 +362,62 @@ class PluginNagiosqlLink extends CommonDBTM {
 			" AND pc.items_id = d.id".
 			" ORDER BY name";
 
-		$result3 = $DB->query($query3);
+			$result3 = $DB->query($query3);
 
-		$used = array($ID);
+			$used = array($ID);
 
-		while ( $data = $DB->fetch_array($result3) )
+			while ( $data = $DB->fetch_array($result3) )
 			$used[] = $data["items_id"];
 
-		if($DB->numrows($result3))
+			if($DB->numrows($result3))
 			$DB->data_seek($result3,0);
 
-		if ( $withtemplate != 2 ) 
+			if ( $withtemplate != 2 )
 			echo "<form method='post' action=\"".$CFG_GLPI["root_doc"]."/plugins/nagiosql/front/link.form.php\">";
-		echo "<div align='center'><table class='tab_cadre_fixe'>";
+			echo "<div align='center'><table class='tab_cadre_fixe'>";
 
-		// Parent
-		echo "<tr><th colspan='".$numcols."'>".$LANG["plugin_nagiosql"]["params"][1].":</th></tr>";
-		echo "<tr><th>".$LANG["plugin_nagiosql"]['params'][3]."</th>";
-		if ($display_entity)
+			// Parent
+			echo "<tr><th colspan='".$numcols."'>".$LANG["plugin_nagiosql"]["params"][1].":</th></tr>";
+			echo "<tr><th>".$LANG["plugin_nagiosql"]['params'][3]."</th>";
+			if ($display_entity)
 			echo "<th>".$LANG["entity"][0]."</th>";
-		echo "<th>".$LANG["plugin_nagiosql"]["params"][0]."</th>";
+			echo "<th>".$LANG["plugin_nagiosql"]["params"][0]."</th>";
 
-		if( $showgroup )
+			if( $showgroup )
 			echo "<th>".$LANG["common"][35]."</th>";
 
-		if( plugin_nagiosql_haveRight("nagiosql","w") )
+			if( plugin_nagiosql_haveRight("nagiosql","w") )
 			echo "<th>&nbsp;</th>";
-		echo "</tr>";
+			echo "</tr>";
 
-		echo '<tr class="tab_bg_1">';
+			echo '<tr class="tab_bg_1">';
 
-		$result = $DB->query($query1);
-		if ( $DB->numrows($result) > 0 ){
-			$data=$DB->fetch_array($result);
-			echo '<td align="center"><a href="'.$CFG_GLPI["root_doc"].'/front/'.$form.'.form.php?id='.$data['parent_id'].'">',$data['name'];
-			if ( $_SESSION["glpiis_ids_visible"] ) echo " (".$data["parent_id"].")";
-			echo '</a></td>';
-			if ($display_entity){
-				if ( $data['entID'] == 0 )
+			$result = $DB->query($query1);
+			if ( $DB->numrows($result) > 0 ){
+				$data=$DB->fetch_array($result);
+				echo '<td align="center"><a href="'.$CFG_GLPI["root_doc"].'/front/'.$form.'.form.php?id='.$data['parent_id'].'">',$data['name'];
+				if ( $_SESSION["glpiis_ids_visible"] ) echo " (".$data["parent_id"].")";
+				echo '</a></td>';
+				if ($display_entity){
+					if ( $data['entID'] == 0 )
 					echo "<td align='center'>".$LANG["entity"][2]."</td>";
-				else
+					else
 					echo "<td align='center'>".$data['entity']."</td>";
-			}
-			echo '<td align="center">'.$data['type'].'</td>';
+				}
+				echo '<td align="center">'.$data['type'].'</td>';
 
-			if($showgroup)
+				if($showgroup)
 				echo '<td align="center">'.$data['grp'].'</td>';
 
-			if ( plugin_nagiosql_haveRight("nagiosql","w") )
+				if ( plugin_nagiosql_haveRight("nagiosql","w") )
 				if ( $withtemplate < 2 )
-					echo "<td align='center' class='tab_bg_2'><a href='".$CFG_GLPI["root_doc"]."/plugins/nagiosql/front/link.form.php?deletelinks=deletelinks&amp;id=".$data['id']."'>".$LANG["plugin_nagiosql"]['params'][5]."</a></td>";
+				echo "<td align='center' class='tab_bg_2'><a href='".$CFG_GLPI["root_doc"]."/plugins/nagiosql/front/link.form.php?deletelinks=deletelinks&amp;id=".$data['id']."'>".$LANG["plugin_nagiosql"]['params'][5]."</a></td>";
 
-			$parent = $data["parent_id"];
-			$used[] = $parent;
+				$parent = $data["parent_id"];
+				$used[] = $parent;
 
-			// Siblings
-			$query2 = "SELECT pc.*, d.name, e.id AS entID, e.name AS entity, t.name AS type"
+				// Siblings
+				$query2 = "SELECT pc.*, d.name, e.id AS entID, e.name AS entity, t.name AS type"
 				. $moreselect .
 				" FROM glpi_plugin_nagiosql_links AS pc, $datatable AS d".
 				" LEFT JOIN glpi_entities AS e ON d.entities_id = e.id".
@@ -430,113 +430,113 @@ class PluginNagiosqlLink extends CommonDBTM {
 				" AND pc.parent_id ='$parent'".
 				" ORDER BY name";
 
-			$result2 = $DB->query($query2);
-			if ( $DB->numrows($result2) > 0 ){
-				echo "<tr><th colspan='".$numcols."'>".
+				$result2 = $DB->query($query2);
+				if ( $DB->numrows($result2) > 0 ){
+					echo "<tr><th colspan='".$numcols."'>".
 					'<a href="'.$CFG_GLPI["root_doc"].'/front/'.$form.'.php'.
 					'?contains[0]='.urlencode($data['name']).
 					'&field[0]=2250&sort=1&is_deleted=0 ">'.
 					$LANG["plugin_nagiosql"]["params"][4]."</a>:</th></tr>";
 
-				while ( $data=$DB->fetch_array($result2) ){
+					while ( $data=$DB->fetch_array($result2) ){
+						echo '<tr class="tab_bg_1"><td align="center"><a href="'.$CFG_GLPI["root_doc"].'/front/'.$form.'.form.php?id='.$data['items_id'].'">'.$data['name'];
+						if ($_SESSION["glpiis_ids_visible"]) echo " (".$data["items_id"].")";
+						echo '</a></td>';
+						if ($display_entity){
+							if ($data['entID']==0)
+							echo "<td align='center'>".$LANG["entity"][2]."</td>";
+							else
+							echo "<td align='center'>".$data['entity']."</td>";
+						}
+						echo '<td align="center">'.$data['type'].'</td>';
+
+						if($showgroup)
+						echo '<td align="center">'.$data['grp'].'</td>';
+
+						if ( plugin_nagiosql_haveRight("nagiosql","w") )
+						echo "<td>&nbsp;</td>";
+						echo '</tr>';
+					}
+				}
+			}
+			elseif ( plugin_nagiosql_haveRight("nagiosql","w") ){
+
+				echo '<td align="center" colspan="'.($numcols-1).'">';
+				echo '<input type="hidden" name="id" value="'.$ID.'">';
+				echo '<input type="hidden" name="type" value="'.$itemtype.'">';
+
+				PluginRelationsRelation::dropdown(array('name'   => "parentID",
+								'itemtype' => $itemtype,
+								'entity' => $data['entity'],
+								'used'   => $used));
+
+				echo '</td>';
+				echo '<td align="center"><input class="submit" type="submit" value="'.$LANG["buttons"][8].'" name="add"/></td>';
+			}
+
+			// Children
+			$query4="SELECT `name` FROM `$datatable` WHERE `id` = '$ID'";
+			$result4 = $DB->query($query4);
+			$thisdata = $DB->fetch_array($result4);
+
+			echo "<tr><th colspan='".$numcols."'>".
+			'<a href="'.$CFG_GLPI["root_doc"].'/front/'.$form.'.php'.
+			'?contains[0]='.urlencode($thisdata['name']).
+			'&field[0]=2250&sort=1&is_deleted=0 ">'.
+			$LANG["plugin_nagiosql"]["params"][2]."</a>:</th></tr>";
+			echo "<tr><th>".$LANG["plugin_nagiosql"]['params'][3]."</th>";
+			if ($display_entity)
+			echo "<th>".$LANG["entity"][0]."</th>";
+			echo "<th>".$LANG["plugin_nagiosql"]["params"][0]."</th>";
+			if($showgroup)
+			echo "<th>".$LANG["common"][35]."</th>";
+			if(plugin_nagiosql_haveRight("nagiosql","w"))
+			echo "<th>&nbsp;</th>";
+			echo "</tr>";
+
+			if ( $DB->numrows($result3) >0 ){
+				while ($data=$DB->fetch_array($result3))
+				{
 					echo '<tr class="tab_bg_1"><td align="center"><a href="'.$CFG_GLPI["root_doc"].'/front/'.$form.'.form.php?id='.$data['items_id'].'">'.$data['name'];
 					if ($_SESSION["glpiis_ids_visible"]) echo " (".$data["items_id"].")";
 					echo '</a></td>';
 					if ($display_entity){
 						if ($data['entID']==0)
-							echo "<td align='center'>".$LANG["entity"][2]."</td>";
+						echo "<td align='center'>".$LANG["entity"][2]."</td>";
 						else
-							echo "<td align='center'>".$data['entity']."</td>";
+						echo "<td align='center'>".$data['entity']."</td>";
 					}
 					echo '<td align="center">'.$data['type'].'</td>';
-
 					if($showgroup)
-						echo '<td align="center">'.$data['grp'].'</td>';
-
-					if ( plugin_nagiosql_haveRight("nagiosql","w") )
-						echo "<td>&nbsp;</td>";
+					echo '<td align="center">'.$data['grp'].'</td>';
+					if(plugin_nagiosql_haveRight("nagiosql","w"))
+					if ($withtemplate<2)
+					echo "<td align='center' class='tab_bg_2'><a href='".$CFG_GLPI["root_doc"]."/plugins/nagiosql/front/link.form.php?deletelinks=deletelinks&amp;id=".$data['id']."'>".$LANG["plugin_nagiosql"]['params'][5]."</a></td>";
 					echo '</tr>';
 				}
 			}
-		}
-		elseif ( plugin_nagiosql_haveRight("nagiosql","w") ){
-
-			echo '<td align="center" colspan="'.($numcols-1).'">';
-			echo '<input type="hidden" name="id" value="'.$ID.'">';
-			echo '<input type="hidden" name="type" value="'.$itemtype.'">';
-
-			PluginRelationsRelation::dropdown(array('name'   => "parentID",
+			if ( plugin_nagiosql_haveRight("nagiosql","w") ){
+				echo '<tr class="tab_bg_1">';
+				echo '<td align="center" colspan="'.($numcols-1).'">';
+				echo '<input type="hidden" name="id" value="'.$ID.'">';
+				echo '<input type="hidden" name="type" value="'.$itemtype.'">';
+					
+				PluginRelationsRelation::dropdown(array('name'   => "childID",
 								'itemtype' => $itemtype,
 								'entity' => $data['entity'],
 								'used'   => $used));
 
-			echo '</td>';
-			echo '<td align="center"><input class="submit" type="submit" value="'.$LANG["buttons"][8].'" name="add"/></td>';
-		}
-
-		// Children
-		$query4="SELECT `name` FROM `$datatable` WHERE `id` = '$ID'";
-		$result4 = $DB->query($query4);
-		$thisdata = $DB->fetch_array($result4);
-
-		echo "<tr><th colspan='".$numcols."'>".
-			'<a href="'.$CFG_GLPI["root_doc"].'/front/'.$form.'.php'.
-			'?contains[0]='.urlencode($thisdata['name']).
-			'&field[0]=2250&sort=1&is_deleted=0 ">'.
-			$LANG["plugin_nagiosql"]["params"][2]."</a>:</th></tr>";
-		echo "<tr><th>".$LANG["plugin_nagiosql"]['params'][3]."</th>";
-		if ($display_entity)
-			echo "<th>".$LANG["entity"][0]."</th>";
-		echo "<th>".$LANG["plugin_nagiosql"]["params"][0]."</th>";
-		if($showgroup)
-			echo "<th>".$LANG["common"][35]."</th>";
-		if(plugin_nagiosql_haveRight("nagiosql","w"))
-			echo "<th>&nbsp;</th>";
-		echo "</tr>";
-
-		if ( $DB->numrows($result3) >0 ){
-			while ($data=$DB->fetch_array($result3))
-			{
-				echo '<tr class="tab_bg_1"><td align="center"><a href="'.$CFG_GLPI["root_doc"].'/front/'.$form.'.form.php?id='.$data['items_id'].'">'.$data['name'];
-				if ($_SESSION["glpiis_ids_visible"]) echo " (".$data["items_id"].")";
-				echo '</a></td>';
-				if ($display_entity){
-					if ($data['entID']==0)
-						echo "<td align='center'>".$LANG["entity"][2]."</td>";
-					else
-						echo "<td align='center'>".$data['entity']."</td>";
-				}
-				echo '<td align="center">'.$data['type'].'</td>';
-				if($showgroup)
-					echo '<td align="center">'.$data['grp'].'</td>';
-				if(plugin_nagiosql_haveRight("nagiosql","w"))
-					if ($withtemplate<2)
-						echo "<td align='center' class='tab_bg_2'><a href='".$CFG_GLPI["root_doc"]."/plugins/nagiosql/front/link.form.php?deletelinks=deletelinks&amp;id=".$data['id']."'>".$LANG["plugin_nagiosql"]['params'][5]."</a></td>";
+				echo '</td>';
+				echo '<td align="center"><input class="submit" type="submit" value="'.$LANG["buttons"][8].'" name="additem"/></td>';
 				echo '</tr>';
 			}
-		}
-		if ( plugin_nagiosql_haveRight("nagiosql","w") ){
-			echo '<tr class="tab_bg_1">';
-			echo '<td align="center" colspan="'.($numcols-1).'">';
-			echo '<input type="hidden" name="id" value="'.$ID.'">';
-			echo '<input type="hidden" name="type" value="'.$itemtype.'">';
-			
-			PluginRelationsRelation::dropdown(array('name'   => "childID",
-								'itemtype' => $itemtype,
-								'entity' => $data['entity'],
-								'used'   => $used));
 
-			echo '</td>';
-			echo '<td align="center"><input class="submit" type="submit" value="'.$LANG["buttons"][8].'" name="additem"/></td>';
-			echo '</tr>';
-		}
 
-	
-		if ( ! empty($withtemplate) )
+			if ( ! empty($withtemplate) )
 			echo "<input type='hidden' name='is_template' value='1'>";
 
-		echo "</table></div>";
-		echo "</form>";
+			echo "</table></div>";
+			echo "</form>";
 
 	}
 }

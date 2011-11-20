@@ -62,5 +62,17 @@ $LANG['plugin_nagiosql']['profile'][1] = $title;
 $LANG['plugin_nagiosql']['profile'][6] = 'Listes des profils déjà configurés';
 
 $LANG['plugin_nagiosql']['setup'][1] = 'Ce plugin requiert GLPI version 0.80 ou supérieur';
+$LANG['plugin_relations']['setup'][3] = 'Configuration du plugin '.$title;
+$LANG['plugin_relations']['setup'][4] = 'Installer le plugin '.$title;
+$LANG['plugin_relations']['setup'][1] = 'Votre système contient des données du plugin '.$title.' Ces données ont été restaurées.';
+$LANG['plugin_relations']['setup'][5] = 'Votre système contient des données d\'une version antérieure du plugin '.$title.' . Ces données vont être mises à jour lors de l\'activation du plugin.';
+$LANG['plugin_relations']['setup'][6] = 'Désinstaller le plugin '.$title;
+$LANG['plugin_relations']['setup'][8] = 'Attention, la désinstallation du plugin est irréversible.<br> Vous perdrez toutes les données.';
+$LANG['plugin_relations']['setup'][7] = 'Le plugin $title a été désinstallé mais les données correspondantes n\'ont pas été supprimées.';
+$LANG['plugin_relations']['setup'][9] = 'Cliquer ici pour supprimer toutes les données du plugin $title.';
+$LANG['plugin_relations']['setup'][10] = 'Êtes-vous certain de vouloir supprimer toutes les données du plugin $title.';
+$LANG['plugin_relations']['setup'][11] = "Mode d\'emploi";
+$LANG['plugin_relations']['setup'][12] = 'FAQ';
+$LANG['plugin_relations']['setup'][14] = "Merci de vous placer sur l\'entité racine (voir tous)";
 
 ?>
