@@ -33,17 +33,15 @@
 // ------------------------------------------------------------------------
 
 define("PLUGIN_NAGIOSQL_VERSION","1.0.0");
-define("PLUGIN_NAGIOSQL_MIN_TYPE",31950);
-define("PLUGIN_NAGIOSQL_MAX_TYPE",31999);
-define('RELATIONS_LINK', 0);
-define('RELATIONS_UNLINK', 1);
+define('NAGIOSQL_LINK', 0);
+define('NAGIOSQL_UNLINK', 1);
 
 // Init the hooks of the plugins -Needed
 function plugin_init_nagiosql() {
 	global $PLUGIN_HOOKS,$LANG,$CFG_GLPI;
 
 	// Params : plugin name - string type - ID - Array of attributes
-	Plugin::registerClass('PluginNagiosqlRelation');
+	Plugin::registerClass('PluginNagiosqlLink');
 
 	$PLUGIN_HOOKS['change_profile']['nagiosql'] = array('PluginNagiosqlProfile','select');
 

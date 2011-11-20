@@ -38,19 +38,28 @@ $title="NagiosQL";
 
 $LANG['plugin_nagiosql']['title'][0]="$title";
 
-$LANG['plugin_relations']['params'][0]='Type';
-$LANG['plugin_relations']['params'][1]='Parent';
-$LANG['plugin_relations']['params'][2]='Children';
-$LANG['plugin_relations']['params'][3]='Name';
-$LANG['plugin_relations']['params'][4]='Siblings';
-$LANG['plugin_relations']['params'][5]='Remove';
-$LANG['plugin_relations']['params'][6]='Change Parent to...';
+$LANG['plugin_nagiosql']['params'][0]='Type';
+$LANG['plugin_nagiosql']['params'][1]='Parent';
+$LANG['plugin_nagiosql']['params'][2]='Children';
+$LANG['plugin_nagiosql']['params'][3]='Name';
+$LANG['plugin_nagiosql']['params'][4]='Siblings';
+$LANG['plugin_nagiosql']['params'][5]='Remove';
+$LANG['plugin_nagiosql']['params'][6]='Change Parent to...';
 
-$LANG['plugin_relations']['errors'][0]='Sorry. You cannot add a descendant as a parent!';
-$LANG['plugin_relations']['errors'][1]='Sorry. You cannot add an ancestor as a child!';
-$LANG['plugin_relations']['errors'][2]='Failed to purge associated relationships';
-$LANG['plugin_relations']['errors'][3]='Also purged associated relationships';
-$LANG['plugin_relations']['errors'][4]='Sorry. A parent cannot be its own child!';
+$LANG['plugin_relations']['log'][0]='Linked to child with ID';
+$LANG['plugin_relations']['log'][1]='Linked to parent with ID';
+$LANG['plugin_relations']['log'][2]='Unlinked from child with ID';
+$LANG['plugin_relations']['log'][3]='Unlinked from parent with ID';
+
+$LANG['plugin_nagiosql']['errors'][0]='Sorry. You cannot add a descendant as a parent!';
+$LANG['plugin_nagiosql']['errors'][1]='Sorry. You cannot add an ancestor as a child!';
+$LANG['plugin_nagiosql']['errors'][2]='Failed to purge associated links';
+$LANG['plugin_nagiosql']['errors'][3]='Also purged associated links';
+$LANG['plugin_nagiosql']['errors'][4]='Sorry. A parent cannot be its own child!';
+
+$LANG['plugin_nagiosql']['profile'][0] = 'Rights management';
+$LANG['plugin_nagiosql']['profile'][1] = $title;
+$LANG['plugin_nagiosql']['profile'][6] = 'List of profiles already configured';
 
 $LANG['plugin_nagiosql']['setup'][1] = 'This plugin requires GLPI version 0.80 or higher';
 
